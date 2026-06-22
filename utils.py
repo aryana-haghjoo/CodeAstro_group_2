@@ -3,7 +3,7 @@ import scipy
 import matplotlib.pyplot as plt
 import astropy.io.fits as fits
 
-def open_spectrum(file, i=1):
+def open_spectrum(file):
     """
     Opens a spectrum file and returns the wavelength and intensity arrays.
     i (int): int of galaxy you want to look at from JADES file
@@ -14,7 +14,7 @@ def open_spectrum(file, i=1):
     """
     spec = np.load(file)
     wavelength = spec['wavelength_high']
-    flux = spec['flux_high'][i]
+    flux = spec['flux_high']
     return wavelength, flux
 
 def plot_spectrum(wavelength, flux):
