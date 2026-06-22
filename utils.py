@@ -27,7 +27,7 @@ def plot_spectrum(wavelength, flux):
     """
     plt.figure(figsize=(10, 6))
     plt.plot(wavelength, flux, color='blue')
-    plt.xlabel('Wavelength (Angstroms)')
+    plt.xlabel('Wavelength (microns)')
     plt.ylabel('Flux')
     plt.title('Spectrum')
     plt.grid()
