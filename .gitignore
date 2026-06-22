@@ -220,5 +220,8 @@ __marimo__/
 
 castro/
 data/
-.claude/
 wandb/
+splits/
+*.pth
+train.log
+.claude/
