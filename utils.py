@@ -16,3 +16,19 @@ def open_spectrum(file):
     intensity = spec[0].data['FLUX']
     
     return wavelength, intensity
+
+def plot_spectrum(wavelength, intensity):
+    """
+    Plots the spectrum given wavelength and intensity arrays.
+    
+    Args:
+        wavelength (numpy.ndarray): Array of wavelengths.
+        intensity (numpy.ndarray): Array of intensities.
+    """
+    plt.figure(figsize=(10, 6))
+    plt.plot(wavelength, intensity, color='blue')
+    plt.xlabel('Wavelength (Angstroms)')
+    plt.ylabel('Intensity')
+    plt.title('Spectrum')
+    plt.grid()
+    plt.show()
