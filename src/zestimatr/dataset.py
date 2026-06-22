@@ -5,14 +5,14 @@ from torch.utils.data import Dataset
 
 class SpectraForZHead(Dataset):
     """
-    Dataset for high-res redshift prediction (oracle upper bound).
+    Dataset for high-res redshift prediction.
 
-    Uses the *original* dataset NPZ:
+    Expects an .npz file with:
       - flux_high (HR spectra)
       - z          (ground truth redshifts)
 
     Returns:
-      x_high_norm: (L_high,) float32  — per-spectrum normalized
+      x_high_norm: (L_high,) float32 -- per-spectrum normalized
       z:           float32
     """
     def __init__(self, dataset_npz_path, normalize_flux=True):
@@ -43,6 +43,6 @@ class SpectraForZHead(Dataset):
         return len(self.flux_high)
 
     def __getitem__(self, idx):
-        x_high = torch.tensor(self.flux_high[idx], dtype=torch.float32)  # (L_high,)
-        z = torch.tensor(self.z[idx], dtype=torch.float32)               # scalar
+        x_high = torch.tensor(self.flux_high[idx], dtype=torch.float32)
+        z = torch.tensor(self.z[idx], dtype=torch.float32)
         return x_high, z

@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools >= 64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "zestimatr"
+version = "0.1.0"
+description = "Spectroscopic redshift estimation with uncertainty quantification"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.9"
+dependencies = [
+    "numpy",
+    "torch",
+    "matplotlib",
+    "tqdm",
+]
+
+[project.optional-dependencies]
+train = [
+    "wandb",
+    "pyyaml",
+]
+dev = [
+    "pytest",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
