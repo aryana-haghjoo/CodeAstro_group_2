@@ -67,16 +67,19 @@ After estimating a redshift, you can detect and visualize emission lines in the 
 wavelength = data["wavelength_high"]
 flux = data["flux_high"]
 
-# Detect lines using the predicted redshift
+# Detect lines — returns a pandas DataFrame
 lines = zestimatr.detect_emission_lines(wavelength, flux, predictions["z_pred"][0])
-for l in lines:
-    print(f"{l['name']:>15s}  obs={l['obs_wavelength']:.4f} μm")
+print(lines)
+
+# Optionally save to CSV
+lines = zestimatr.detect_emission_lines(wavelength, flux, predictions["z_pred"][0],
+                                        save_path="detected_lines.csv")
 
 # Plot spectrum with emission lines marked as dashed vertical lines
 zestimatr.plot_spectrum(wavelength, flux, z=predictions["z_pred"][0])
 ```
 
-The built-in catalog includes 16 common rest-frame lines (Ly-alpha, H-alpha, H-beta, [O II], [O III], [N II], [S II], and more). Detection uses a local peak-finding approach with a configurable `sigma_thresh` (default 2.5).
+The built-in catalog includes 16 common rest-frame lines (Ly-alpha, H-alpha, H-beta, [O II], [O III], [N II], [S II], and more). Detection uses a local peak-finding approach with a configurable `sigma_thresh` (default 3.0).
 
 ## Metrics
 

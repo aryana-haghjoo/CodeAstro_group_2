@@ -15,6 +15,7 @@ dependencies = [
     "matplotlib",
     "tqdm",
     "huggingface_hub",
+    "pandas",
 ]
 
 [project.optional-dependencies]
