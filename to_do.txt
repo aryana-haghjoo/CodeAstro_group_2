@@ -1,3 +1,4 @@
 - add the emission line visualization 
 - add to pip
+- write a documentation webpage for the package
 - add the training to hugging face
