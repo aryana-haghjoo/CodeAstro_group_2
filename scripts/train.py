@@ -95,9 +95,9 @@ def main():
     ap.add_argument("--train_frac", type=float, default=0.8)
     ap.add_argument("--seed", type=int, default=42)
 
-    ap.add_argument("--hidden_dim", type=int, default=64)
-    ap.add_argument("--num_blocks", type=int, default=4)
-    ap.add_argument("--dropout", type=float, default=0.1)
+    ap.add_argument("--hidden_dim", type=int, default=128)
+    ap.add_argument("--num_blocks", type=int, default=6)
+    ap.add_argument("--dropout", type=float, default=0.2)
 
     ap.add_argument("--batch_size", type=int, default=32)
     ap.add_argument("--epochs", type=int, default=200)
