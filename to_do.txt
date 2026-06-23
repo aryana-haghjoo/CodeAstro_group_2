@@ -1,3 +1,4 @@
+- Add unit tests
 - add the emission line visualization 
 - add to pip
 - write a documentation webpage for the package
