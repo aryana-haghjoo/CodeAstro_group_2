@@ -155,4 +155,4 @@ MIT
 
 ## Authors
 
-Code/Astro 2026 Group 2
+Code/Astro 2026 Group 2: Aryana Haghjoo - Lau, Marie Wingyee - Michele Woodland
