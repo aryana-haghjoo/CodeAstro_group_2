@@ -162,9 +162,9 @@ zestimatr/
 │   └── test_metrics.py      # Unit tests
 ├── tutorials/
 │   ├── quickstart_single_spectrum.ipynb  # Single spectrum tutorial
-│   ├── quickstart_batch_spectra.ipynb    # Batch (100 spectra) tutorial
+│   ├── quickstart_batch_spectra.ipynb    # Batch (200 spectra) tutorial
 │   ├── galaxy300_spectrum.npz            # Example single spectrum
-│   └── sample_100_spectra.npz            # Example 100-spectrum sample
+│   └── sample_200_spectra.npz            # Example 200-spectrum sample
 ├── pyproject.toml           # Package metadata
 └── README.md
 ```
