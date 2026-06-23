@@ -2,7 +2,7 @@
 
 Spectroscopic redshift estimation from high-resolution galaxy spectra, with uncertainty quantification.
 
-`zestimatr` is a Python package that uses a 1D convolutional neural network to predict redshifts directly from high-resolution spectral flux. The model outputs both a point estimate and a calibrated uncertainty (predicted standard deviation) for each spectrum.
+`zestimatr` is a Python package that uses a residual 1D convolutional neural network with an MLP head to predict redshifts directly from high-resolution spectral flux. The model outputs both a point estimate and a calibrated uncertainty (predicted standard deviation) for each spectrum.
 
 ## Installation
 
@@ -79,7 +79,7 @@ To train the model from scratch:
 
 ```bash
 pip install -e ".[train]"
-python scripts/train.py --data data/spectra_dataset_2500_unaugmented.npz --wandb_mode online
+python scripts/train.py --data data/spectra_dataset_2500_DR4.npz --wandb_mode online
 ```
 
 Key training options:
