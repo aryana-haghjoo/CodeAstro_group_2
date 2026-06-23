@@ -1,2 +1,3 @@
 - add the emission line visualization 
 - add to pip
+- add the training to hugging face
