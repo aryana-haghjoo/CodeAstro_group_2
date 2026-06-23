@@ -3,6 +3,7 @@ from .dataset import SpectraForZHead
 from .metrics import compute_metrics, compute_calibration_metrics
 from .inference import load_model, predict_redshifts, download_pretrained
 from .plotting import plot_predictions
+from .emission_lines import EMISSION_LINES, detect_emission_lines, plot_spectrum
 
 __all__ = [
     "ZHead1D",
@@ -13,4 +14,7 @@ __all__ = [
     "predict_redshifts",
     "download_pretrained",
     "plot_predictions",
+    "EMISSION_LINES",
+    "detect_emission_lines",
+    "plot_spectrum",
 ]
