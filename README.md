@@ -41,9 +41,10 @@ z_true = float(data["z"])
 flux_norm = (flux - np.nanmean(flux)) / max(np.nanstd(flux), 1e-25)
 flux_tensor = torch.tensor(flux_norm, dtype=torch.float32)
 
-# Load pretrained model
+# Download and load pretrained model from Hugging Face
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-zhead, norm_params = zestimatr.load_model("best_zhead_hires.pth", device=device)
+checkpoint_path = zestimatr.download_pretrained()
+zhead, norm_params = zestimatr.load_model(checkpoint_path, device=device)
 
 # Predict
 dataset = TensorDataset(flux_tensor.unsqueeze(0), torch.tensor([z_true]))
@@ -94,6 +95,27 @@ Key training options:
 | `--wandb_mode` | online | `online`, `offline`, or `disabled` |
 
 Training logs and plots are synced to [Weights & Biases](https://wandb.ai/).
+
+## Pretrained Model
+
+A pretrained checkpoint trained on JADES DR4 (52,647 spectra) is available on [Hugging Face](https://huggingface.co/aryana-haghjoo/zestimatr).
+
+Download it automatically:
+
+```python
+import zestimatr
+
+path = zestimatr.download_pretrained()
+zhead, norm_params = zestimatr.load_model(path)
+```
+
+| Metric | Value |
+|--------|-------|
+| MAE | 0.141 |
+| RMSE | 0.323 |
+| Median \|dz\|/(1+z) | 0.012 |
+| Outlier rate | 5.7% |
+| Calibration std | 0.84 |
 
 ## Data Format
 
