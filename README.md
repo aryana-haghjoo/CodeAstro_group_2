@@ -119,7 +119,10 @@ zestimatr/
 ├── tests/
 │   └── test_metrics.py      # Unit tests
 ├── tutorials/
-│   └── quickstart.ipynb     # Tutorial notebook
+│   ├── quickstart_single_spectrum.ipynb  # Single spectrum tutorial
+│   ├── quickstart_batch_spectra.ipynb    # Batch (100 spectra) tutorial
+│   ├── galaxy300_spectrum.npz            # Example single spectrum
+│   └── sample_100_spectra.npz            # Example 100-spectrum sample
 ├── pyproject.toml           # Package metadata
 └── README.md
 ```
