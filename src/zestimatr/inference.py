@@ -6,6 +6,20 @@ from tqdm import tqdm
 
 from .model import ZHead1D
 
+HF_REPO_ID = "aryana-haghjoo/zestimatr"
+HF_FILENAME = "best_zhead_hires.pth"
+
+
+def download_pretrained(repo_id=HF_REPO_ID, filename=HF_FILENAME):
+    """
+    Download the pretrained checkpoint from Hugging Face Hub.
+
+    Returns the local path to the downloaded file.
+    Requires ``huggingface_hub`` to be installed (``pip install huggingface_hub``).
+    """
+    from huggingface_hub import hf_hub_download
+    return hf_hub_download(repo_id=repo_id, filename=filename)
+
 
 class InferenceDataset(Dataset):
     """
