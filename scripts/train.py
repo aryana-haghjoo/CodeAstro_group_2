@@ -264,22 +264,42 @@ def main():
         )
 
         # ---- Matplotlib plots ----
-        fig1, ax1 = plt.subplots(figsize=(5, 5))
+        fig1, ax1 = plt.subplots(figsize=(6, 6))
         if n_finite == 0:
             ax1.text(0.5, 0.5, "No finite points", ha="center",
                      va="center", transform=ax1.transAxes)
         else:
             x, y = z_true_np[m], z_pred_np[m]
-            ax1.scatter(x, y, s=6, alpha=0.35)
+            sig = z_sig_np[m]
+            c = abs_dz_over_1pz[m]
+            vmax = max(float(np.nanpercentile(c, 99)), 1e-6)
+            sc1 = ax1.scatter(x, y, c=c, s=5, alpha=0.5,
+                              vmin=0.0, vmax=vmax, cmap='viridis')
             zmin = float(min(x.min(), y.min()))
             zmax = float(max(x.max(), y.max()))
-            ax1.plot([zmin, zmax], [zmin, zmax], "k--", lw=1)
+            ax1.plot([zmin, zmax], [zmin, zmax], "r--", lw=1.5,
+                     label="Perfect prediction")
             ax1.set_xlim(zmin, zmax)
             ax1.set_ylim(zmin, zmax)
             ax1.set_aspect("equal", adjustable="box")
+            cb = fig1.colorbar(sc1, ax=ax1)
+            cb.set_label("|dz|/(1+z)")
+            ax1.legend(loc="upper left")
+            metrics_text = (
+                f"MAE: {metrics['mae']:.4f}\n"
+                f"RMSE: {metrics['rmse']:.4f}\n"
+                f"Med |dz|/(1+z): {metrics['median_rel_error']:.4f}\n"
+                f"Outlier rate: {metrics['outlier_rate']:.1%}"
+            )
+            ax1.text(0.95, 0.05, metrics_text, transform=ax1.transAxes,
+                     ha="right", va="bottom",
+                     bbox=dict(boxstyle="round", facecolor="wheat",
+                               alpha=0.7),
+                     fontsize=8)
         ax1.set_xlabel("True redshift")
         ax1.set_ylabel("Predicted redshift")
-        ax1.set_title("z_pred vs z_true")
+        ax1.set_title(f"Epoch {E}: Predicted vs True Redshift")
+        ax1.grid(True, alpha=0.2)
 
         fig2, ax2 = plt.subplots(figsize=(5, 5))
         m2 = m & np.isfinite(abs_dz_over_1pz)
@@ -388,6 +408,81 @@ def main():
             wandb.save("best_zhead_hires.pth")
             print(f"   Saved best_zhead_hires.pth "
                   f"(val_loss_nll={best_val:.6f})")
+
+    # ---- Final summary: evaluate best checkpoint on val set ----
+    print("\nEvaluating best checkpoint on validation set...")
+    best_ckpt = torch.load("best_zhead_hires.pth", map_location=device)
+    zhead.load_state_dict(best_ckpt["zhead_state_dict"])
+    zhead.eval()
+
+    all_mu, all_z, all_sig = [], [], []
+    with torch.no_grad():
+        for x_high, z in val_loader:
+            x_high = x_high.to(device).unsqueeze(1)
+            z = z.to(device)
+            mu_raw, logvar_n = zhead(x_high)
+            logvar_n = torch.clamp(logvar_n, min=-12.0, max=12.0)
+            mu_n = z_min_n + (z_max_n - z_min_n) * torch.sigmoid(mu_raw)
+            mu = mu_n * z_std + z_mean
+            sig = torch.sqrt(torch.exp(logvar_n).clamp_min(
+                args.z_var_floor)) * z_std
+            all_mu.append(mu.cpu())
+            all_z.append(z.cpu())
+            all_sig.append(sig.cpu())
+
+    z_pred_np = torch.cat(all_mu).numpy()
+    z_true_np = torch.cat(all_z).numpy()
+    z_sig_np = torch.cat(all_sig).numpy()
+
+    best_metrics = compute_metrics(z_pred_np, z_true_np)
+    best_cal = compute_calibration_metrics(z_pred_np, z_true_np, z_sig_np)
+    abs_dz_1pz = np.abs(z_pred_np - z_true_np) / (1.0 + np.abs(z_true_np))
+
+    fig_final, ax_final = plt.subplots(figsize=(7, 7))
+    vmax = max(float(np.nanpercentile(abs_dz_1pz, 99)), 1e-6)
+    sc = ax_final.scatter(z_true_np, z_pred_np, c=abs_dz_1pz, s=5,
+                          alpha=0.5, vmin=0.0, vmax=vmax, cmap='viridis')
+    zmin = float(min(z_true_np.min(), z_pred_np.min()))
+    zmax = float(max(z_true_np.max(), z_pred_np.max()))
+    ax_final.plot([zmin, zmax], [zmin, zmax], "r--", lw=2,
+                  label="Perfect prediction")
+    ax_final.set_xlim(zmin, zmax)
+    ax_final.set_ylim(zmin, zmax)
+    ax_final.set_aspect("equal", adjustable="box")
+    cb = fig_final.colorbar(sc, ax=ax_final)
+    cb.set_label("|dz|/(1+z)")
+    ax_final.legend(loc="upper left")
+    ax_final.grid(True, alpha=0.2)
+    ax_final.set_xlabel("True Redshift", fontsize=12)
+    ax_final.set_ylabel("Predicted Redshift", fontsize=12)
+    ax_final.set_title("Best Model: Predicted vs True Redshift (Validation)",
+                       fontsize=13)
+    metrics_text = (
+        f"MAE: {best_metrics['mae']:.4f}\n"
+        f"RMSE: {best_metrics['rmse']:.4f}\n"
+        f"NMAD: {best_metrics['nmad']:.4f}\n"
+        f"Med |dz|/(1+z): {best_metrics['median_rel_error']:.4f}\n"
+        f"Outlier rate: {best_metrics['outlier_rate']:.1%}\n"
+        f"Cal. std: {best_cal['calibration_std']:.3f}\n"
+        f"1-sigma cov: {best_cal['frac_1sigma']:.1%}"
+    )
+    ax_final.text(0.95, 0.05, metrics_text, transform=ax_final.transAxes,
+                  ha="right", va="bottom",
+                  bbox=dict(boxstyle="round", facecolor="wheat", alpha=0.7),
+                  fontsize=9)
+    fig_final.tight_layout()
+
+    wandb.log({"val/best_z_pred_vs_true": wandb.Image(fig_final)})
+    fig_final.savefig("best_predictions.png", dpi=300, bbox_inches="tight")
+    plt.close(fig_final)
+
+    print(f"\nBest model metrics:")
+    print(f"   MAE: {best_metrics['mae']:.6f}")
+    print(f"   RMSE: {best_metrics['rmse']:.6f}")
+    print(f"   Med |dz|/(1+z): {best_metrics['median_rel_error']:.6f}")
+    print(f"   Outlier rate: {best_metrics['outlier_rate']:.1%}")
+    print(f"   Calibration std: {best_cal['calibration_std']:.3f}")
+    print(f"Plot saved to best_predictions.png")
 
     print("\nTraining complete!")
     wandb.finish()
