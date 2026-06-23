@@ -59,6 +59,25 @@ metrics = zestimatr.compute_metrics(predictions["z_pred"], predictions["z_true"]
 print(f"MAE: {metrics['mae']:.4f}, Outlier rate: {metrics['outlier_rate']:.1%}")
 ```
 
+## Emission Line Detection
+
+After estimating a redshift, you can detect and visualize emission lines in the spectrum:
+
+```python
+wavelength = data["wavelength_high"]
+flux = data["flux_high"]
+
+# Detect lines using the predicted redshift
+lines = zestimatr.detect_emission_lines(wavelength, flux, predictions["z_pred"][0])
+for l in lines:
+    print(f"{l['name']:>15s}  obs={l['obs_wavelength']:.4f} μm")
+
+# Plot spectrum with emission lines marked as dashed vertical lines
+zestimatr.plot_spectrum(wavelength, flux, z=predictions["z_pred"][0])
+```
+
+The built-in catalog includes 16 common rest-frame lines (Ly-alpha, H-alpha, H-beta, [O II], [O III], [N II], [S II], and more). Detection uses a local peak-finding approach with a configurable `sigma_thresh` (default 2.5).
+
 ## Metrics
 
 `zestimatr` provides two evaluation functions:
@@ -135,7 +154,8 @@ zestimatr/
 │   ├── dataset.py           # PyTorch dataset for training
 │   ├── metrics.py           # Accuracy and calibration metrics
 │   ├── inference.py         # Model loading + prediction pipeline
-│   └── plotting.py          # Validation plots
+│   ├── plotting.py          # Validation plots
+│   └── emission_lines.py    # Emission line detection + spectrum plotting
 ├── scripts/
 │   └── train.py             # Training CLI (not part of the package)
 ├── tests/

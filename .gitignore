@@ -225,3 +225,4 @@ splits/
 *.pth
 train.log
 .claude/
+to_do_aryana.txt
