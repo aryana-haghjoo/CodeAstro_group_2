@@ -4,6 +4,7 @@
 [![Python](https://img.shields.io/pypi/pyversions/zestimatr)](https://pypi.org/project/zestimatr/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Hugging Face](https://img.shields.io/badge/Model-Hugging%20Face-orange)](https://huggingface.co/aryana-haghjoo/zestimatr)
+[![arXiv](https://img.shields.io/badge/arXiv-2603.18357-b31b1b)](https://arxiv.org/abs/2603.18357)
 
 Spectroscopic redshift estimation from high-resolution galaxy spectra, with uncertainty quantification.
 
