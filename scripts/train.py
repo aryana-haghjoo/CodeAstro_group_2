@@ -3,14 +3,13 @@
 train.py -- Train the ZHead1D redshift estimator on high-resolution spectra.
 
 Usage:
-    python scripts/train.py --data data/spectra_dataset_2500_unaugmented.npz
+    python scripts/train.py --train_data data/train_DR4.npz --eval_data data/eval_DR4.npz
 """
 import os
 import argparse
-import hashlib
 import numpy as np
 import torch
-from torch.utils.data import DataLoader, Subset
+from torch.utils.data import DataLoader
 from tqdm import tqdm
 import wandb
 import yaml
@@ -49,30 +48,6 @@ def set_defaults_from_config(parser: argparse.ArgumentParser, cfg: dict):
     parser.set_defaults(**filtered)
 
 
-# ---- split helper ----
-
-def hash_file(path):
-    with open(path, "rb") as f:
-        return hashlib.md5(f.read()).hexdigest()
-
-
-def get_or_make_split(dataset_path, N, train_frac=0.8, seed=42, split_dir="splits"):
-    os.makedirs(split_dir, exist_ok=True)
-    ds_hash = hash_file(dataset_path)
-    split_path = os.path.join(split_dir, f"split_{ds_hash}.npz")
-
-    if os.path.exists(split_path):
-        arr = np.load(split_path)
-        return arr["train_idx"], arr["test_idx"], split_path
-
-    rng = np.random.default_rng(seed)
-    perm = rng.permutation(N)
-    n_train = int(train_frac * N)
-    train_idx, test_idx = perm[:n_train], perm[n_train:]
-    np.savez(split_path, train_idx=train_idx, test_idx=test_idx,
-             dataset_hash=ds_hash, N=N)
-    return train_idx, test_idx, split_path
-
 
 # ---- debug helper ----
 
@@ -91,8 +66,8 @@ def main():
     ap = argparse.ArgumentParser()
 
     ap.add_argument("--config", type=str, default="config.yaml")
-    ap.add_argument("--data", type=str, default="data/spectra_dataset_2500_unaugmented.npz")
-    ap.add_argument("--train_frac", type=float, default=0.8)
+    ap.add_argument("--train_data", type=str, default="data/train_DR4.npz")
+    ap.add_argument("--eval_data", type=str, default="data/eval_DR4.npz")
     ap.add_argument("--seed", type=int, default=42)
 
     ap.add_argument("--hidden_dim", type=int, default=128)
@@ -121,16 +96,10 @@ def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Device: {device}")
 
-    # ---- Dataset ----
-    full_ds = SpectraForZHead(args.data)
-    N = len(full_ds)
-    train_idx, test_idx, split_path = get_or_make_split(
-        args.data, N, train_frac=args.train_frac, seed=args.seed
-    )
-    print(f"Split: {len(train_idx)} train, {len(test_idx)} val (from {split_path})")
-
-    train_ds = Subset(full_ds, train_idx)
-    val_ds = Subset(full_ds, test_idx)
+    # ---- Dataset (pre-split: no data leakage) ----
+    train_ds = SpectraForZHead(args.train_data)
+    val_ds = SpectraForZHead(args.eval_data)
+    print(f"Loaded: {len(train_ds)} train, {len(val_ds)} val")
 
     train_loader = DataLoader(train_ds, batch_size=args.batch_size,
                               shuffle=True, num_workers=4)
@@ -138,7 +107,7 @@ def main():
                             shuffle=False, num_workers=4)
 
     # ---- Z normalization ----
-    z_train = [full_ds[i][1] for i in train_idx]
+    z_train = [train_ds[i][1] for i in range(len(train_ds))]
     z_mean, z_std = float(np.mean(z_train)), float(np.std(z_train))
     z_min, z_max = float(np.min(z_train)), float(np.max(z_train))
     z_min_n = (z_min - z_mean) / z_std
@@ -473,7 +442,8 @@ def main():
     fig_final.tight_layout()
 
     wandb.log({"val/best_z_pred_vs_true": wandb.Image(fig_final)})
-    fig_final.savefig("best_predictions.png", dpi=300, bbox_inches="tight")
+    os.makedirs("plots", exist_ok=True)
+    fig_final.savefig("plots/best_predictions.png", dpi=300, bbox_inches="tight")
     plt.close(fig_final)
 
     print(f"\nBest model metrics:")
@@ -482,7 +452,7 @@ def main():
     print(f"   Med |dz|/(1+z): {best_metrics['median_rel_error']:.6f}")
     print(f"   Outlier rate: {best_metrics['outlier_rate']:.1%}")
     print(f"   Calibration std: {best_cal['calibration_std']:.3f}")
-    print(f"Plot saved to best_predictions.png")
+    print(f"Plot saved to plots/best_predictions.png")
 
     print("\nTraining complete!")
     wandb.finish()
