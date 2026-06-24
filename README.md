@@ -28,6 +28,14 @@ pip install -e .
 
 ## Quick Start
 
+You can run the following command below to predict the redshift for a given spectrum npz file.
+
+```
+python run_zestimatr.py $PATH_to_data_file
+```
+
+The code below can also be pasted into a notebook or .py file to predict the redshift for a spectrum and evaluate the metrics.
+
 ```python
 import numpy as np
 import torch
@@ -88,11 +96,12 @@ The built-in catalog includes 16 common rest-frame lines (Ly-alpha, H-alpha, H-b
 `zestimatr` provides two evaluation functions:
 
 - **`compute_metrics(z_pred, z_true)`** -- accuracy metrics:
+
   - MAE, RMSE, NMAD
   - Median |dz|/(1+z)
   - Outlier rate (fraction with |dz|/(1+z) > 0.15)
-
 - **`compute_calibration_metrics(z_pred, z_true, z_uncertainty)`** -- uncertainty calibration:
+
   - Calibration std and mean of normalized residuals
   - 1/2/3-sigma coverage fractions
   - Median predicted uncertainty
@@ -132,17 +141,17 @@ python scripts/train.py --train_data data/train_DR4.npz --eval_data data/eval_DR
 
 Key training options:
 
-| Flag | Default | Description |
-|------|---------|-------------|
-| `--hidden_dim` | 128 | Conv block hidden dimension |
-| `--num_blocks` | 6 | Number of residual conv blocks |
-| `--dropout` | 0.2 | Dropout rate |
-| `--epochs` | 200 | Training epochs |
-| `--lr` | 3e-4 | Learning rate |
-| `--batch_size` | 32 | Batch size |
-| `--wandb_mode` | online | `online`, `offline`, or `disabled` |
+| Flag             | Default | Description                              |
+| ---------------- | ------- | ---------------------------------------- |
+| `--hidden_dim` | 128     | Conv block hidden dimension              |
+| `--num_blocks` | 6       | Number of residual conv blocks           |
+| `--dropout`    | 0.2     | Dropout rate                             |
+| `--epochs`     | 200     | Training epochs                          |
+| `--lr`         | 3e-4    | Learning rate                            |
+| `--batch_size` | 32      | Batch size                               |
+| `--wandb_mode` | online  | `online`, `offline`, or `disabled` |
 
-Training logs and plots are synced to [Weights & Biases](https://wandb.ai/).
+Training logs and plots are synced to [Weights &amp; Biases](https://wandb.ai/).
 
 ## Pretrained Model
 
@@ -157,13 +166,13 @@ path = zestimatr.download_pretrained()
 zhead, norm_params = zestimatr.load_model(path)
 ```
 
-| Metric | Value |
-|--------|-------|
-| MAE | 0.141 |
-| RMSE | 0.323 |
-| Median \|dz\|/(1+z) | 0.012 |
-| Outlier rate | 5.7% |
-| Calibration std | 0.84 |
+| Metric             | Value |
+| ------------------ | ----- |
+| MAE                | 0.141 |
+| RMSE               | 0.323 |
+| Median\|dz\|/(1+z) | 0.012 |
+| Outlier rate       | 5.7%  |
+| Calibration std    | 0.84  |
 
 ## Data Format
 
@@ -188,6 +197,7 @@ zestimatr/
 ├── scripts/
 │   ├── prepare_dataset.py   # Data extraction, quality cuts, split, augmentation
 │   └── train.py             # Training CLI (not part of the package)
+│   └── run_zestimatr.py.    # Predict redshift for a given spectrum
 ├── tests/
 │   └── test_metrics.py      # Unit tests
 ├── tutorials/
