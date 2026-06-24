@@ -1,5 +1,5 @@
-- Add unit tests
+- Add unit tests - done! (in the tests directory)
 - add the emission line visualization - done!
+- add the training to hugging face - done!
 - add to pip
 - write a documentation webpage for the package
-- add the training to hugging face - done!
