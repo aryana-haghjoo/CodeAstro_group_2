@@ -226,3 +226,4 @@ splits/
 train.log
 .claude/
 to_do_aryana.txt
+best_zhead_hires.pth
