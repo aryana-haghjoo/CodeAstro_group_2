@@ -1,5 +1,10 @@
 # zestimatr
 
+[![PyPI](https://img.shields.io/pypi/v/zestimatr)](https://pypi.org/project/zestimatr/)
+[![Python](https://img.shields.io/pypi/pyversions/zestimatr)](https://pypi.org/project/zestimatr/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Hugging Face](https://img.shields.io/badge/Model-Hugging%20Face-orange)](https://huggingface.co/aryana-haghjoo/zestimatr)
+
 Spectroscopic redshift estimation from high-resolution galaxy spectra, with uncertainty quantification.
 
 `zestimatr` is a Python package that uses a residual 1D convolutional neural network with an MLP head to predict redshifts directly from high-resolution spectral flux. The model outputs both a point estimate and a calibrated uncertainty (predicted standard deviation) for each spectrum.
