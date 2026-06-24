@@ -5,6 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Hugging Face](https://img.shields.io/badge/Model-Hugging%20Face-orange)](https://huggingface.co/aryana-haghjoo/zestimatr)
 [![arXiv](https://img.shields.io/badge/arXiv-2603.18357-b31b1b)](https://arxiv.org/abs/2603.18357)
+[![A rectangular badge, half black half purple containing the text made at Code Astro](https://img.shields.io/badge/Made%20at-Code/Astro-blueviolet.svg)](https://semaphorep.github.io/codeastro/)
 
 Spectroscopic redshift estimation from high-resolution galaxy spectra, with uncertainty quantification.
 
@@ -19,8 +20,8 @@ pip install zestimatr
 Or install from source:
 
 ```bash
-git clone https://github.com/aryana-haghjoo/CodeAstro_group_2.git
-cd CodeAstro_group_2
+git clone https://github.com/aryana-haghjoo/zestimatr.git
+cd zestimatr
 pip install -e .
 ```
 
