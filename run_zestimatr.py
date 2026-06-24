@@ -2,9 +2,14 @@ import numpy as np
 import torch
 from torch.utils.data import DataLoader, TensorDataset
 import zestimatr
+import argparse
+
+parser = argparse.ArgumentParser(description='Predict redshift from a spectrum file')
+parser.add_argument('data_path', type=str, help='Path to the .npz spectrum file')
+args = parser.parse_args()
 
 # Load a spectrum
-data = np.load("tutorials/galaxy300_spectrum.npz")
+data = np.load(args.data_path)
 flux = data["flux_high"]
 z_true = float(data["z"])
 
