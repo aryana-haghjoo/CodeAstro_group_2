@@ -372,6 +372,8 @@ def main():
                 "zhead_state_dict": zhead.state_dict(),
                 "z_mean": z_mean,
                 "z_std": z_std,
+                "z_min": z_min,
+                "z_max": z_max,
                 "config": vars(args),
             }, "best_zhead_hires.pth")
             wandb.save("best_zhead_hires.pth")
