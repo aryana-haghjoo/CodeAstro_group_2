@@ -23,6 +23,10 @@ train = [
     "wandb",
     "pyyaml",
 ]
+preprocess = [
+    "astropy",
+    "scipy",
+]
 dev = [
     "pytest",
 ]

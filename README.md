@@ -18,12 +18,6 @@ cd CodeAstro_group_2
 pip install -e .
 ```
 
-To install with training dependencies (wandb, pyyaml):
-
-```bash
-pip install -e ".[train]"
-```
-
 ## Quick Start
 
 ```python
@@ -95,13 +89,37 @@ The built-in catalog includes 16 common rest-frame lines (Ly-alpha, H-alpha, H-b
   - 1/2/3-sigma coverage fractions
   - Median predicted uncertainty
 
-## Training
+## For Developers
 
-To train the model from scratch:
+Most users only need the base install above. The following is for retraining or rebuilding the dataset from raw JADES data.
+
+### Extra dependencies
 
 ```bash
+# Training only
 pip install -e ".[train]"
-python scripts/train.py --data data/spectra_dataset_2500_DR4.npz --wandb_mode online
+
+# Data preprocessing only (astropy, scipy)
+pip install -e ".[preprocess]"
+
+# Everything
+pip install -e ".[train,preprocess]"
+```
+
+### Data preprocessing
+
+Prepare train/eval datasets from JADES DR4 FITS files. The pipeline splits at the object level before augmentation to prevent data leakage:
+
+```bash
+python scripts/prepare_dataset.py --jades_dir /path/to/JADES_data/DR4
+```
+
+This produces `data/train_DR4.npz` (augmented training set) and `data/eval_DR4.npz` (held-out evaluation set).
+
+### Training
+
+```bash
+python scripts/train.py --train_data data/train_DR4.npz --eval_data data/eval_DR4.npz --wandb_mode online
 ```
 
 Key training options:
@@ -160,6 +178,7 @@ zestimatr/
 │   ├── plotting.py          # Validation plots
 │   └── emission_lines.py    # Emission line detection + spectrum plotting
 ├── scripts/
+│   ├── prepare_dataset.py   # Data extraction, quality cuts, split, augmentation
 │   └── train.py             # Training CLI (not part of the package)
 ├── tests/
 │   └── test_metrics.py      # Unit tests
