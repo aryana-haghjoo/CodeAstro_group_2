@@ -5,6 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Documentation](https://readthedocs.org/projects/zestimatr/badge/?version=latest)](https://zestimatr.readthedocs.io/)
 [![Hugging Face](https://img.shields.io/badge/Model-Hugging%20Face-orange)](https://huggingface.co/aryana-haghjoo/zestimatr)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20835578.svg)](https://doi.org/10.5281/zenodo.20835578)
 [![arXiv](https://img.shields.io/badge/arXiv-2603.18357-b31b1b)](https://arxiv.org/abs/2603.18357)
 [![A rectangular badge, half black half purple containing the text made at Code Astro](https://img.shields.io/badge/Made%20at-Code/Astro-blueviolet.svg)](https://semaphorep.github.io/codeastro/)
 
