@@ -24,6 +24,7 @@ dependencies = [
     "tqdm",
     "huggingface_hub",
     "pandas",
+    "scipy",
 ]
 
 [project.optional-dependencies]
