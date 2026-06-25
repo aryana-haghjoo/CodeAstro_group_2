@@ -1,0 +1,32 @@
+name: Notebooks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  run-notebooks:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          pip install -e .
+          pip install jupyter nbconvert
+
+      - name: Run single spectrum tutorial
+        run: jupyter nbconvert --to notebook --execute tutorials/quickstart_single_spectrum.ipynb --output /dev/null
+        timeout-minutes: 10
+
+      - name: Run batch spectra tutorial
+        run: jupyter nbconvert --to notebook --execute tutorials/quickstart_batch_spectra.ipynb --output /dev/null
+        timeout-minutes: 10
