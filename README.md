@@ -205,4 +205,8 @@ MIT
 
 ## Authors
 
-Code/Astro 2026 Group 2: Aryana Haghjoo - Lau, Marie Wingyee - Michele Woodland
+Code/Astro 2026 Group 2:
+
+- Aryana Haghjoo [![ORCID](https://img.shields.io/badge/ORCID-0009--0006--3071--7143-green?logo=orcid)](https://orcid.org/0009-0006-3071-7143)
+- Lau, Marie Wingyee [![ORCID](https://img.shields.io/badge/ORCID-0000--0001--9755--9406-green?logo=orcid)](https://orcid.org/0000-0001-9755-9406)
+- Michele Woodland
