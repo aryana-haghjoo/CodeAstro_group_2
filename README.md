@@ -1,7 +1,7 @@
 # zestimatr
 
 [![PyPI](https://img.shields.io/pypi/v/zestimatr)](https://pypi.org/project/zestimatr/)
-[![Python](https://img.shields.io/pypi/pyversions/zestimatr)](https://pypi.org/project/zestimatr/)
+[![Python](https://img.shields.io/pypi/pyversions/zestimatr?v=3)](https://pypi.org/project/zestimatr/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Documentation](https://readthedocs.org/projects/zestimatr/badge/?version=latest)](https://zestimatr.readthedocs.io/)
 [![Hugging Face](https://img.shields.io/badge/Model-Hugging%20Face-orange)](https://huggingface.co/aryana-haghjoo/zestimatr)
