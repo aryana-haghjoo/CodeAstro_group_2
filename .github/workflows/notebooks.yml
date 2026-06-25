@@ -21,14 +21,19 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -e .
-          pip install jupyter nbconvert
+          pip install jupyter nbconvert ipykernel
+          python -m ipykernel install --user --name python3
 
       - name: Run single spectrum tutorial
         working-directory: tutorials
-        run: jupyter nbconvert --to notebook --execute quickstart_single_spectrum.ipynb --output /dev/null
+        env:
+          MPLBACKEND: Agg
+        run: jupyter nbconvert --to notebook --execute quickstart_single_spectrum.ipynb --output executed_single.ipynb
         timeout-minutes: 10
 
       - name: Run batch spectra tutorial
         working-directory: tutorials
-        run: jupyter nbconvert --to notebook --execute quickstart_batch_spectra.ipynb --output /dev/null
+        env:
+          MPLBACKEND: Agg
+        run: jupyter nbconvert --to notebook --execute quickstart_batch_spectra.ipynb --output executed_batch.ipynb
         timeout-minutes: 10
