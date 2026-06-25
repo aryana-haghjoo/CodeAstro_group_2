@@ -368,14 +368,23 @@ def main():
 
         if va_loss < best_val:
             best_val = va_loss
-            torch.save({
+            ckpt_data = {
                 "zhead_state_dict": zhead.state_dict(),
                 "z_mean": z_mean,
                 "z_std": z_std,
                 "z_min": z_min,
                 "z_max": z_max,
                 "config": vars(args),
-            }, "best_zhead_hires.pth")
+            }
+            try:
+                train_npz = np.load(args.train_data, allow_pickle=True)
+                for wk in ('wavelength_high', 'wavelength'):
+                    if wk in train_npz:
+                        ckpt_data['wavelength_grid'] = train_npz[wk]
+                        break
+            except Exception:
+                pass
+            torch.save(ckpt_data, "best_zhead_hires.pth")
             wandb.save("best_zhead_hires.pth")
             print(f"   Saved best_zhead_hires.pth "
                   f"(val_loss_nll={best_val:.6f})")

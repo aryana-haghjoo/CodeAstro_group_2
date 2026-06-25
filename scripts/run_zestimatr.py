@@ -1,6 +1,4 @@
 import numpy as np
-import torch
-from torch.utils.data import DataLoader, TensorDataset
 import zestimatr
 import argparse
 
@@ -13,23 +11,21 @@ data = np.load(args.data_path)
 flux = data["flux_high"]
 z_true = float(data["z"])
 
-# Normalize (zero mean, unit variance)
-flux_norm = (flux - np.nanmean(flux)) / max(np.nanstd(flux), 1e-25)
-flux_tensor = torch.tensor(flux_norm, dtype=torch.float32)
+# Load wavelength array if available (for resampling to training grid)
+wavelength = None
+for key in ("wavelength_high", "wavelength", "wavelength_hi"):
+    if key in data:
+        wavelength = data[key]
+        break
 
 # Download and load pretrained model from Hugging Face
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = "cuda" if __import__("torch").cuda.is_available() else "cpu"
 checkpoint_path = zestimatr.download_pretrained()
 zhead, norm_params = zestimatr.load_model(checkpoint_path, device=device)
 
-# Predict
-dataset = TensorDataset(flux_tensor.unsqueeze(0), torch.tensor([z_true]))
-dataloader = DataLoader(dataset, batch_size=1)
-predictions = zestimatr.predict_redshifts(zhead, dataloader, norm_params, device)
+# Predict — wavelength resampling is handled automatically
+predictions = zestimatr.predict(flux, zhead, norm_params,
+                                wavelength=wavelength, device=device)
 
-print(f"Predicted: z = {predictions['z_pred'][0]:.4f} +/- {predictions['z_uncertainty'][0]:.4f}")
+print(f"Predicted: z = {predictions['z_pred']:.4f} +/- {predictions['z_uncertainty']:.4f}")
 print(f"True:      z = {z_true:.4f}")
-
-# Evaluate
-metrics = zestimatr.compute_metrics(predictions["z_pred"], predictions["z_true"])
-print(f"MAE: {metrics['mae']:.4f}, Outlier rate: {metrics['outlier_rate']:.1%}")

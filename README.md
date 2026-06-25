@@ -35,39 +35,34 @@ You can run the following command below to predict the redshift for a given spec
 python run_zestimatr.py $PATH_to_data_file
 ```
 
-The code below can also be pasted into a notebook or .py file to predict the redshift for a spectrum and evaluate the metrics.
+The code below can also be pasted into a notebook or .py file to predict the redshift for a spectrum. Just pass your flux array (and optionally the corresponding wavelength array) — normalization and resampling are handled automatically.
 
 ```python
 import numpy as np
-import torch
-from torch.utils.data import DataLoader, TensorDataset
 import zestimatr
 
 # Load a spectrum
 data = np.load("galaxy300_spectrum.npz")
 flux = data["flux_high"]
-z_true = float(data["z"])
-
-# Normalize (zero mean, unit variance)
-flux_norm = (flux - np.nanmean(flux)) / max(np.nanstd(flux), 1e-25)
-flux_tensor = torch.tensor(flux_norm, dtype=torch.float32)
+wavelength = data["wavelength_high"]
 
 # Download and load pretrained model from Hugging Face
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 checkpoint_path = zestimatr.download_pretrained()
-zhead, norm_params = zestimatr.load_model(checkpoint_path, device=device)
+zhead, norm_params = zestimatr.load_model(checkpoint_path)
 
-# Predict
-dataset = TensorDataset(flux_tensor.unsqueeze(0), torch.tensor([z_true]))
-dataloader = DataLoader(dataset, batch_size=1)
-predictions = zestimatr.predict_redshifts(zhead, dataloader, norm_params, device)
+# Predict — pass wavelength to automatically resample to the training grid
+result = zestimatr.predict(flux, zhead, norm_params, wavelength=wavelength)
 
-print(f"Predicted: z = {predictions['z_pred'][0]:.4f} +/- {predictions['z_uncertainty'][0]:.4f}")
-print(f"True:      z = {z_true:.4f}")
+print(f"Predicted: z = {result['z_pred']:.4f} +/- {result['z_uncertainty']:.4f}")
+```
 
-# Evaluate
-metrics = zestimatr.compute_metrics(predictions["z_pred"], predictions["z_true"])
-print(f"MAE: {metrics['mae']:.4f}, Outlier rate: {metrics['outlier_rate']:.1%}")
+If your spectrum is already on the training wavelength grid (2500 points, 1–5 μm), you can omit the `wavelength` argument. For batch prediction, pass a 2-D flux array of shape `(N, L)`:
+
+```python
+# Batch prediction
+flux_batch = data["flux_high"]  # shape (N, L)
+results = zestimatr.predict(flux_batch, zhead, norm_params, wavelength=wavelength)
+print(results["z_pred"])  # shape (N,)
 ```
 
 ## Emission Line Detection
@@ -75,19 +70,12 @@ print(f"MAE: {metrics['mae']:.4f}, Outlier rate: {metrics['outlier_rate']:.1%}")
 After estimating a redshift, you can detect and visualize emission lines in the spectrum:
 
 ```python
-wavelength = data["wavelength_high"]
-flux = data["flux_high"]
-
 # Detect lines — returns a pandas DataFrame
-lines = zestimatr.detect_emission_lines(wavelength, flux, predictions["z_pred"][0])
+lines = zestimatr.detect_emission_lines(wavelength, flux, result["z_pred"])
 print(lines)
 
-# Optionally save to CSV
-lines = zestimatr.detect_emission_lines(wavelength, flux, predictions["z_pred"][0],
-                                        save_path="detected_lines.csv")
-
 # Plot spectrum with emission lines marked as dashed vertical lines
-zestimatr.plot_spectrum(wavelength, flux, z=predictions["z_pred"][0])
+zestimatr.plot_spectrum(wavelength, flux, z=result["z_pred"])
 ```
 
 The built-in catalog includes 16 common rest-frame lines (Ly-alpha, H-alpha, H-beta, [O II], [O III], [N II], [S II], and more). Detection uses a local peak-finding approach with a configurable `sigma_thresh` (default 3.0).
@@ -181,8 +169,9 @@ Input `.npz` files should contain:
 
 - `flux_high` -- high-resolution spectral flux, shape `(N, L)` for datasets or `(L,)` for a single spectrum
 - `z` -- ground truth redshifts, shape `(N,)` or scalar (also accepts keys: `redshift`, `z_true`, `z_spec`)
+- `wavelength_high` -- wavelength array, shape `(L,)`. If provided (along with `wavelength` to `predict()`), spectra are automatically resampled onto the model's training grid (2500 points, 1–5 μm). If omitted, flux is assumed to already be on the training grid.
 
-Optional keys: `wavelength_high`, `flux_high_err`, `id`, `ra`, `dec`.
+Optional keys: `flux_high_err`, `id`, `ra`, `dec`.
 
 ## Project Structure
 
