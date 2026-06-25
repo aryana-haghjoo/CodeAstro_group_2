@@ -13,6 +13,18 @@ extensions = [
     'sphinx.ext.napoleon',
 ]
 
+autodoc_mock_imports = [
+    'torch',
+    'numpy',
+    'matplotlib',
+    'tqdm',
+    'huggingface_hub',
+    'pandas',
+    'scipy',
+    'astropy',
+    'wandb',
+]
+
 html_theme = 'sphinx_rtd_theme'
 
 html_static_path = ['_static']
