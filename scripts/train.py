@@ -391,7 +391,7 @@ def main():
 
     # ---- Final summary: evaluate best checkpoint on val set ----
     print("\nEvaluating best checkpoint on validation set...")
-    best_ckpt = torch.load("best_zhead_hires.pth", map_location=device)
+    best_ckpt = torch.load("best_zhead_hires.pth", map_location=device, weights_only=False)
     zhead.load_state_dict(best_ckpt["zhead_state_dict"])
     zhead.eval()
 
