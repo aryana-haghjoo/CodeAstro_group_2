@@ -24,9 +24,11 @@ jobs:
           pip install jupyter nbconvert
 
       - name: Run single spectrum tutorial
-        run: jupyter nbconvert --to notebook --execute tutorials/quickstart_single_spectrum.ipynb --output /dev/null
+        working-directory: tutorials
+        run: jupyter nbconvert --to notebook --execute quickstart_single_spectrum.ipynb --output /dev/null
         timeout-minutes: 10
 
       - name: Run batch spectra tutorial
-        run: jupyter nbconvert --to notebook --execute tutorials/quickstart_batch_spectra.ipynb --output /dev/null
+        working-directory: tutorials
+        run: jupyter nbconvert --to notebook --execute quickstart_batch_spectra.ipynb --output /dev/null
         timeout-minutes: 10
